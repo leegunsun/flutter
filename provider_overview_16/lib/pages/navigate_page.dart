@@ -14,6 +14,13 @@ class NavigatePage extends StatefulWidget {
 class _NavigatePageState extends State<NavigatePage> {
   @override
   Widget build(BuildContext context) {
+    if (context.read<Counter>().counter == 3) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => OtherPage()));
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(title: Text('Navigate')),
       body: Center(
