@@ -39,7 +39,7 @@ class _WhyProxyProvState extends State<WhyProxyProv> {
       body: Center(
           child: Provider<Translations>(
         create: (context) => Translations(counter),
-        child: Column(children: [
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           ShowTranslations(),
           SizedBox(
             height: 20,
