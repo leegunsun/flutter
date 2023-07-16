@@ -1,12 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:provider/provider.dart';
 import 'package:todo_provider/models/todo_model.dart';
 import 'package:todo_provider/providers/active_todo_count.dart';
+import 'package:todo_provider/providers/flitered_todos.dart';
 import 'package:todo_provider/providers/todo_filter.dart';
 import 'package:todo_provider/providers/todo_list.dart';
 import 'package:todo_provider/providers/todo_search.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/container.dart';
+import 'package:flutter/src/widgets/framework.dart';
 
 class TodosPage extends StatefulWidget {
   const TodosPage({super.key});
@@ -115,7 +118,8 @@ class SearchAndFilterTodo extends StatelessWidget {
             filterButton(context, Filter.active),
             filterButton(context, Filter.completed),
           ],
-        )
+        ),
+        ShowTodos()
       ],
     );
   }
@@ -141,5 +145,94 @@ class SearchAndFilterTodo extends StatelessWidget {
   Color textColor(BuildContext context, Filter filter) {
     final currentFilter = context.watch<TodoFilter>().state.filter;
     return currentFilter == filter ? Colors.blue : Colors.grey;
+  }
+}
+
+class ShowTodos extends StatelessWidget {
+  const ShowTodos({super.key});
+
+  Widget showBackground(int direction) {
+    return Container(
+      margin: const EdgeInsets.all(4),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      color: Colors.red,
+      alignment: direction == 0 ? Alignment.centerLeft : Alignment.centerRight,
+      child: Icon(
+        Icons.delete,
+        size: 30,
+        color: Colors.white,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final todos = context.watch<FilteredTodos>().state.filterdTodos;
+    return ListView.separated(
+      primary: false,
+      shrinkWrap: true,
+      itemBuilder: (BuildContext context, int index) {
+        return Dismissible(
+          onDismissed: (_) {
+            context.read<TodoList>().removeTodo(todos[index]);
+          },
+          confirmDismiss: (_) {
+            return showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text('Are tou sure?'),
+                    content: Text('Do you really went delete?'),
+                    actions: [
+                      TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: Text('No')),
+                      TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: Text('Yes'))
+                    ],
+                  );
+                });
+          },
+          background: showBackground(0),
+          secondaryBackground: showBackground(1),
+          key: ValueKey(todos[index].id),
+          child: TodoItem(todo: todos[index]),
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) {
+        return Divider(
+          color: Colors.grey,
+        );
+      },
+      itemCount: todos.length,
+    );
+  }
+}
+
+class TodoItem extends StatefulWidget {
+  final Todo todo;
+  const TodoItem({
+    Key? key,
+    required this.todo,
+  }) : super(key: key);
+
+  @override
+  State<TodoItem> createState() => _TodoItemState();
+}
+
+class _TodoItemState extends State<TodoItem> {
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(widget.todo.desc),
+      leading: Checkbox(
+        value: widget.todo.completed,
+        onChanged: (bool? checked) {
+          context.read<TodoList>().toggleTodo(widget.todo.id);
+        },
+      ),
+    );
   }
 }

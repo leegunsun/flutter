@@ -49,7 +49,7 @@ class FilteredTodos with ChangeNotifier {
         break;
       case Filter.completed:
         _filteredTodos =
-            todoList.state.todos.where((Todo todo) => !todo.completed).toList();
+            todoList.state.todos.where((Todo todo) => todo.completed).toList();
         break;
       case Filter.all:
       default:
