@@ -223,9 +223,61 @@ class TodoItem extends StatefulWidget {
 }
 
 class _TodoItemState extends State<TodoItem> {
+  late final TextEditingController textController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    textController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              bool _error = false;
+              textController.text = widget.todo.desc;
+              return StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                return AlertDialog(
+                  title: Text('Edit Todo'),
+                  content: TextField(
+                    controller: textController,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                        errorText: _error ? 'value cannot be empty' : null),
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('CANCEL')),
+                    TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _error = textController.text.isEmpty ? true : false;
+
+                            if (!_error) {
+                              Navigator.pop(context);
+                            }
+                          });
+                        },
+                        child: Text('EDIT'))
+                  ],
+                );
+              });
+            });
+      },
       title: Text(widget.todo.desc),
       leading: Checkbox(
         value: widget.todo.completed,
