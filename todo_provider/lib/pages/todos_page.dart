@@ -10,6 +10,7 @@ import 'package:todo_provider/providers/todo_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:todo_provider/utils/debounce.dart';
 
 class TodosPage extends StatefulWidget {
   const TodosPage({super.key});
@@ -91,7 +92,8 @@ class _CreateTodoState extends State<CreateTodo> {
 }
 
 class SearchAndFilterTodo extends StatelessWidget {
-  const SearchAndFilterTodo({super.key});
+  SearchAndFilterTodo({super.key});
+  final debounce = Debounce(milliseconds: 1000);
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +108,9 @@ class SearchAndFilterTodo extends StatelessWidget {
           ),
           onChanged: (String? newSearchTerm) {
             if (newSearchTerm != null) {
-              context.read<TodoSearch>().setSearchTerm(newSearchTerm);
+              debounce.run(() {
+                context.read<TodoSearch>().setSearchTerm(newSearchTerm);
+              });
             }
           },
         ),
@@ -268,6 +272,8 @@ class _TodoItemState extends State<TodoItem> {
                             _error = textController.text.isEmpty ? true : false;
 
                             if (!_error) {
+                              context.read<TodoList>().editTodo(
+                                  widget.todo.id, textController.text);
                               Navigator.pop(context);
                             }
                           });

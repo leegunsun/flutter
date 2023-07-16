@@ -1,10 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:todo_provider/models/todo_model.dart';
 import 'package:todo_provider/providers/todo_filter.dart';
 import 'package:todo_provider/providers/todo_list.dart';
 import 'package:todo_provider/providers/todo_search.dart';
+
+import 'package:flutter/cupertino.dart';
 
 class FilteredTodosState extends Equatable {
   final List<Todo> filterdTodos;
@@ -32,7 +33,15 @@ class FilteredTodosState extends Equatable {
 }
 
 class FilteredTodos with ChangeNotifier {
-  FilteredTodosState _state = FilteredTodosState.initial();
+  // FilteredTodosState _state = FilteredTodosState.initial();
+  late FilteredTodosState _state;
+  final List<Todo> initialFrilteredTodos;
+  FilteredTodos({
+    required this.initialFrilteredTodos,
+  }) {
+    print('initialFrilteredTodos $initialFrilteredTodos');
+    _state = FilteredTodosState(filterdTodos: initialFrilteredTodos);
+  }
   FilteredTodosState get state => _state;
 
   void update(
