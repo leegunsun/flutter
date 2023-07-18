@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
+import 'package:open_weather_provider/constants/constants.dart';
 import 'package:open_weather_provider/pages/search_page.dart';
 import 'package:open_weather_provider/providers/weather/weather_provider.dart';
 import 'package:open_weather_provider/repositories/weather_repository.dart';
 import 'package:open_weather_provider/services/weather_api_services.dart';
+import 'package:open_weather_provider/widgets/error_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:recase/recase.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,7 +21,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String? _city;
   late final WeatherProvider _weatherProv;
-
   @override
   void initState() {
     // TODO: implement initState
@@ -37,14 +39,12 @@ class _HomePageState extends State<HomePage> {
     final WeatherState ws = context.read<WeatherProvider>().state;
 
     if (ws.status == WeatherStatus.error) {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              content: Text(ws.error.errMsg),
-            );
-          });
+      errorDialog(context, ws.error.errMsg);
     }
+  }
+
+  String showTemperature(double temperature) {
+    return temperature.toStringAsFixed(2) + '℃';
   }
 
   Widget _showWeather() {
@@ -65,11 +65,115 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    return Center(
-      child: Text(
-        state.weather.name,
-        style: TextStyle(fontSize: 18),
-      ),
+    if (state.status == WeatherStatus.error && state.weather.name == '') {
+      return Center(
+        child: const Text(
+          'Select a city',
+          style: TextStyle(fontSize: 20),
+        ),
+      );
+    }
+
+    return ListView(
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height / 6,
+        ),
+        Text(
+          state.weather.name,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 40,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              TimeOfDay.fromDateTime(state.weather.lastUpdated).format(context),
+              style: const TextStyle(fontSize: 18),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Text(
+              '(${state.weather.country})',
+              style: const TextStyle(fontSize: 18),
+            )
+          ],
+        ),
+        const SizedBox(
+          height: 60,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              showTemperature(state.weather.temp),
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(
+              width: 20,
+            ),
+            Column(
+              children: [
+                Text(
+                  showTemperature(state.weather.tempMax),
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  showTemperature(state.weather.tempMin),
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 40,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            const Spacer(),
+            showIcon(state.weather.icon),
+            Expanded(
+              flex: 3,
+              child: formatText(state.weather.description),
+            ),
+            const Spacer(),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget showIcon(String icon) {
+    return FadeInImage.assetNetwork(
+      placeholder: 'assets/images/loading.gif',
+      image: 'http://$kIconHost/img/wn/$icon@4x.png',
+      width: 96,
+      height: 96,
+    );
+  }
+
+  Widget formatText(String description) {
+    final formattedString = description.titleCase;
+
+    return Text(
+      formattedString,
+      style: TextStyle(fontSize: 24),
+      textAlign: TextAlign.center,
     );
   }
 
