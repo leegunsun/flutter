@@ -29,8 +29,8 @@ class Weather extends Equatable {
       description: weather['description'],
       icon: weather['icon'],
       temp: main['temp'],
-      tempMin: main['tempMin'],
-      tempMax: main['tempMax'],
+      tempMin: main['temp_min'],
+      tempMax: main['temp_max'],
       name: '',
       country: '',
       lastUpdated: DateTime.now(),
@@ -49,7 +49,9 @@ class Weather extends Equatable {
       );
 
   @override
-  bool get stringify => true;
+  String toString() {
+    return 'Weather(description: $description, icon: $icon, temp: $temp, tempMin: $tempMin, tempMax: $tempMax, name: $name, country: $country, lastUpdated: $lastUpdated)';
+  }
 
   @override
   List<Object> get props {
