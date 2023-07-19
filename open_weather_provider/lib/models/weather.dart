@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 class Weather extends Equatable {
   final String description;
   final String icon;
@@ -10,7 +9,7 @@ class Weather extends Equatable {
   final String name;
   final String country;
   final DateTime lastUpdated;
-  Weather({
+  const Weather({
     required this.description,
     required this.icon,
     required this.temp,
@@ -49,11 +48,6 @@ class Weather extends Equatable {
       );
 
   @override
-  String toString() {
-    return 'Weather(description: $description, icon: $icon, temp: $temp, tempMin: $tempMin, tempMax: $tempMax, name: $name, country: $country, lastUpdated: $lastUpdated)';
-  }
-
-  @override
   List<Object> get props {
     return [
       description,
@@ -65,6 +59,11 @@ class Weather extends Equatable {
       country,
       lastUpdated,
     ];
+  }
+
+  @override
+  String toString() {
+    return 'Weather(description: $description, icon: $icon, temp: $temp, tempMin: $tempMin, tempMax: $tempMax, name: $name, country: $country, lastUpdated: $lastUpdated)';
   }
 
   Weather copyWith({

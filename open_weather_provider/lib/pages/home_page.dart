@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:http/http.dart' as http;
-import 'package:open_weather_provider/constants/constants.dart';
-import 'package:open_weather_provider/pages/search_page.dart';
-import 'package:open_weather_provider/providers/weather/weather_provider.dart';
-import 'package:open_weather_provider/repositories/weather_repository.dart';
-import 'package:open_weather_provider/services/weather_api_services.dart';
-import 'package:open_weather_provider/widgets/error_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:recase/recase.dart';
 
+import '../constants/constants.dart';
+import '../providers/providers.dart';
+import '../widgets/error_dialog.dart';
+import 'search_page.dart';
+import 'settings_page.dart';
+
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -21,9 +18,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String? _city;
   late final WeatherProvider _weatherProv;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _weatherProv = context.read<WeatherProvider>();
     _weatherProv.addListener(_registerListener);
@@ -44,6 +41,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   String showTemperature(double temperature) {
+    final tempUnit = context.watch<TempSettingsProvider>().state.tempUnit;
+
+    if (tempUnit == TempUnit.fahrenheit) {
+      return ((temperature * 9 / 5) + 32).toStringAsFixed(2) + '℉';
+    }
+
     return temperature.toStringAsFixed(2) + '℃';
   }
 
@@ -51,25 +54,25 @@ class _HomePageState extends State<HomePage> {
     final state = context.watch<WeatherProvider>().state;
 
     if (state.status == WeatherStatus.initial) {
-      return Center(
+      return const Center(
         child: Text(
           'Select a city',
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20.0),
         ),
       );
     }
 
     if (state.status == WeatherStatus.loading) {
-      return Center(
+      return const Center(
         child: CircularProgressIndicator(),
       );
     }
 
     if (state.status == WeatherStatus.error && state.weather.name == '') {
-      return Center(
-        child: const Text(
+      return const Center(
+        child: Text(
           'Select a city',
-          style: TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20.0),
         ),
       );
     }
@@ -82,66 +85,54 @@ class _HomePageState extends State<HomePage> {
         Text(
           state.weather.name,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 40,
+          style: const TextStyle(
+            fontSize: 40.0,
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               TimeOfDay.fromDateTime(state.weather.lastUpdated).format(context),
-              style: const TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18.0),
             ),
-            const SizedBox(
-              width: 10,
-            ),
+            const SizedBox(width: 10.0),
             Text(
               '(${state.weather.country})',
-              style: const TextStyle(fontSize: 18),
-            )
+              style: const TextStyle(fontSize: 18.0),
+            ),
           ],
         ),
-        const SizedBox(
-          height: 60,
-        ),
+        const SizedBox(height: 60.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               showTemperature(state.weather.temp),
-              style: TextStyle(
-                fontSize: 30,
+              style: const TextStyle(
+                fontSize: 30.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(
-              width: 20,
-            ),
+            const SizedBox(width: 20.0),
             Column(
               children: [
                 Text(
                   showTemperature(state.weather.tempMax),
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16.0),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10.0),
                 Text(
                   showTemperature(state.weather.tempMin),
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16.0),
                 ),
               ],
             ),
           ],
         ),
-        const SizedBox(
-          height: 40,
-        ),
+        const SizedBox(height: 40.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -153,11 +144,12 @@ class _HomePageState extends State<HomePage> {
             ),
             const Spacer(),
           ],
-        )
+        ),
       ],
     );
   }
 
+  //성공
   Widget showIcon(String icon) {
     return FadeInImage.assetNetwork(
       placeholder: 'assets/images/loading.gif',
@@ -169,10 +161,9 @@ class _HomePageState extends State<HomePage> {
 
   Widget formatText(String description) {
     final formattedString = description.titleCase;
-
     return Text(
       formattedString,
-      style: TextStyle(fontSize: 24),
+      style: const TextStyle(fontSize: 24.0),
       textAlign: TextAlign.center,
     );
   }
@@ -184,20 +175,30 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Weather'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.search),
             onPressed: () async {
               _city = await Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => SearchPage(),
-                ),
+                MaterialPageRoute(builder: (context) {
+                  return const SearchPage();
+                }),
               );
               print('city: $_city');
-
               if (_city != null) {
                 context.read<WeatherProvider>().fetchWeather(_city!);
               }
             },
-            icon: Icon(Icons.search),
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return const SettingsPage();
+                }),
+              );
+            },
+            icon: const Icon(Icons.settings),
           ),
         ],
       ),
