@@ -18,7 +18,7 @@ void errorDialog(BuildContext context, CustomError e) {
               )
             ],
           );
-        });
+        },);
   } else {
     showDialog(
         context: context,
@@ -33,6 +33,6 @@ void errorDialog(BuildContext context, CustomError e) {
               ),
             ],
           );
-        });
+        },);
   }
 }

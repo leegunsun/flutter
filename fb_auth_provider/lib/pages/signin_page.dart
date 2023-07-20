@@ -4,8 +4,6 @@ import 'package:fb_auth_provider/providers/signin/signin_provider.dart';
 import 'package:fb_auth_provider/providers/signin/signin_state.dart';
 import 'package:fb_auth_provider/utils/error_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:validators/validators.dart';
 import 'package:provider/provider.dart';
 
@@ -129,7 +127,7 @@ class _SigninPageState extends State<SigninPage> {
                     child: Text(
                         signinState.signinStatus == SigninStatus.submitting
                             ? 'Loading...'
-                            : 'Sign In'),
+                            : 'Sign In',),
                     style: ElevatedButton.styleFrom(
                       textStyle:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
@@ -154,7 +152,7 @@ class _SigninPageState extends State<SigninPage> {
                       ),
                     ),
                   ),
-                ]),
+                ],),
               ),
             ),
           ),
