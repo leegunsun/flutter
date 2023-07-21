@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "40153241",
+    "project_id": "fafbf-cli-test",
+    "storage_bucket": "fafbf-cli-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40153241:android:b7e209eef9bd195871c808",
+        "android_client_info": {
+          "package_name": "com.example.ff_cli_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "40153241-brc34fvtct7uhkknoiap5gnatm126005.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBixaYmEldScGn0ITH0pmGoY-1FHKj2sOo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "40153241-brc34fvtct7uhkknoiap5gnatm126005.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
